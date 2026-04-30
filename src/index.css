@@ -1421,9 +1421,160 @@ body {
     grid-template-columns: 1fr;
   }
 }
-@media (max-width: 700px) {
+
+@media (max-width: 768px) {
+  .admin-login-btn {
+    top: 10px;
+    right: 12px;
+    padding: 6px 12px;
+    font-size: 11px;
+    height: auto;
+  }
+
+  .intro-screen {
+    padding: 16px;
+    align-items: flex-start;
+    padding-top: 50px;
+  }
+
+  .intro-card {
+    padding: 24px 16px;
+    margin-top: 10px;
+  }
+
+  .intro-card .logo-text {
+    font-size: 22px;
+  }
+
+  .brand-image-large {
+    max-width: 150px;
+  }
+
+  .exam-layout {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .exam-header {
+    padding: 10px 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .exam-header .header-title {
+    font-size: 16px;
+  }
+
+  .exam-header .header-center {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .timer-display {
+    padding: 6px 14px;
+  }
+
+  .timer-display .time-text {
+    font-size: 15px;
+  }
+
+  .question-area {
+    padding: 20px 16px;
+    flex: none;
+  }
+
+  .question-text {
+    font-size: 18px;
+    margin-bottom: 24px;
+  }
+
+  .option-card {
+    padding: 14px 16px;
+  }
+
+  .sidebar {
+    border-left: none;
+    border-top: 1px solid var(--border-glass);
+    padding: 20px 16px;
+    background: rgba(15, 23, 42, 0.9);
+    height: auto;
+    overflow: visible;
+  }
+
+  .nav-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .admin-tabs {
+    padding: 0 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-tab {
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+
   .summary-cards {
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .admin-header-right {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-admin {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .admin-table-wrapper {
+    padding: 0;
+    overflow-x: auto;
+  }
+
+  .cheat-modal {
+    padding: 30px 20px;
+  }
+
+  .result-card {
+    padding: 32px 20px;
+  }
+
+  .result-card .score-text {
+    font-size: 42px;
+  }
+
+  .result-card .result-details {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .summary-cards {
+    grid-template-columns: 1fr;
   }
 }
 
