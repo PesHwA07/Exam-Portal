@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Download, Trash2, ArrowLeft, Users, FileSpreadsheet, BarChart3, LogOut, RefreshCw } from 'lucide-react';
+import { Download, Trash2, ArrowLeft, Users, FileSpreadsheet, BarChart3, LogOut, RefreshCw, FileQuestion } from 'lucide-react';
+import QuestionManager from './QuestionManager';
 import { fetchResults, deleteAllResults } from '../utils/api';
 import * as XLSX from 'xlsx';
 export default function AdminPanel({ token, onBack }) {
@@ -66,13 +67,13 @@ export default function AdminPanel({ token, onBack }) {
           <button className="btn-back" onClick={onBack} title="Logout">
             <LogOut size={18} />
           </button>
-          <div className="header-logo" style={{ background: 'transparent' }}>
+          <div className="header-logo" style={{ background: 'transparent', cursor: 'pointer' }} onClick={() => setActiveTab('analytics')} title="Go to Dashboard">
             <img src="/logo2.jpg" alt="NITS" className="brand-image-small" />
           </div>
-          <span className="header-title">Admin Dashboard</span>
+          <span className="header-title" style={{ cursor: 'pointer' }} onClick={() => setActiveTab('analytics')}>Admin Dashboard</span>
         </div>
         <div className="admin-header-right">
-          <div className="admin-stat">
+          <div className="admin-stat" style={{ cursor: 'pointer' }} onClick={() => setActiveTab('table')} title="View Results Table">
             <Users size={16} />
             <span>{results.length} Student{results.length !== 1 ? 's' : ''}</span>
           </div>
@@ -109,6 +110,12 @@ export default function AdminPanel({ token, onBack }) {
         >
           <FileSpreadsheet size={16} /> Results Table
         </button>
+        <button
+          className={`admin-tab ${activeTab === 'questions' ? 'active' : ''}`}
+          onClick={() => setActiveTab('questions')}
+        >
+          <FileQuestion size={16} /> Questions
+        </button>
       </div>
       {}
       {showConfirm && (
@@ -126,7 +133,9 @@ export default function AdminPanel({ token, onBack }) {
       )}
       {}
       <div className="admin-content">
-        {loading ? (
+        {activeTab === 'questions' ? (
+          <QuestionManager token={token} />
+        ) : loading ? (
           <div className="admin-empty">
             <RefreshCw size={48} color="var(--text-muted)" className="spin" />
             <h3>Loading Results...</h3>

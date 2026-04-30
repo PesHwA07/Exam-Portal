@@ -23,5 +23,14 @@ dist-ssr
 *.sln
 *.sw?
 
+# Server
 server/node_modules
 server/.env
+server/uploads
+
+# Temp files
+diff.txt
+diff_utf8.txt
+
+# Agent
+.agent

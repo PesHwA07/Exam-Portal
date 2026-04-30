@@ -1,0 +1,142 @@
+EXAM TITLE: Full NITS Assessment Test
+CATEGORY: General
+
+1. If all Bloops are Razzies and all Razzies are Lazzies, then which of the following is definitely true?
+A) All Bloops are Lazzies
+B) All Lazzies are Bloops
+C) All Razzies are Bloops
+D) None of the above
+Answer: A
+
+2. A train running at 60 km/hr crosses a pole in 9 seconds. What is the length of the train?
+A) 120 meters
+B) 150 meters
+C) 180 meters
+D) 200 meters
+Answer: B
+
+3. Choose the word most similar in meaning to 'Ephemeral'.
+A) Eternal
+B) Transient
+C) Permanent
+D) Durable
+Answer: B
+
+4. If the price of a commodity increases by 20%, by what percent must a consumer reduce consumption to maintain the same expenditure?
+A) 16.67%
+B) 20%
+C) 25%
+D) 15%
+Answer: A
+
+5. In a certain code language, 'COMPUTER' is written as 'RFUVQNPC'. How would 'MEDICINE' be written in that code?
+A) ENICFDEM
+B) ENIDCFEM
+C) FOJEJDNF
+D) EOJDCINM
+Answer: C
+
+6. A company's revenue was ₹40 Lakhs in Q1, ₹55 Lakhs in Q2, ₹45 Lakhs in Q3, and ₹60 Lakhs in Q4. What was the average quarterly revenue?
+A) ₹48 Lakhs
+B) ₹50 Lakhs
+C) ₹52 Lakhs
+D) ₹55 Lakhs
+Answer: B
+
+7. Two pipes A and B can fill a tank in 20 minutes and 30 minutes respectively. If both pipes are opened simultaneously, how long will it take to fill the tank?
+A) 10 minutes
+B) 12 minutes
+C) 15 minutes
+D) 25 minutes
+Answer: B
+
+8. Select the correctly punctuated sentence.
+A) Its a beautiful day, isn't it?
+B) It's a beautiful day, isn't it?
+C) Its a beautiful day isn't it?
+D) It's a beautiful day isn't it.
+Answer: B
+
+9. If 'A' is the brother of 'B', 'B' is the sister of 'C', and 'C' is the father of 'D', how is 'A' related to 'D'?
+A) Uncle
+B) Father
+C) Grandfather
+D) Brother
+Answer: A
+
+10. What is the compound interest on ₹10,000 at 10% per annum for 2 years, compounded annually?
+A) ₹2,000
+B) ₹2,100
+C) ₹2,200
+D) ₹2,500
+Answer: B
+
+11. Which number should come next in the series: 2, 6, 12, 20, 30, ?
+A) 38
+B) 40
+C) 42
+D) 44
+Answer: C
+
+12. Choose the antonym of 'Benevolent'.
+A) Kind
+B) Malevolent
+C) Generous
+D) Charitable
+Answer: B
+
+13. A man walks at 5 km/hr for 6 hours and at 4 km/hr for 12 hours. What is his average speed?
+A) 4.33 km/hr
+B) 4.5 km/hr
+C) 4.67 km/hr
+D) 5 km/hr
+Answer: A
+
+14. If a pie chart shows that Engineering takes up 90° of the total, what percentage does Engineering represent?
+A) 20%
+B) 25%
+C) 30%
+D) 35%
+Answer: B
+
+15. Statement: All dogs are animals. All animals are living beings. Conclusion: All dogs are living beings.
+A) The conclusion is true
+B) The conclusion is false
+C) The conclusion is uncertain
+D) Data is insufficient
+Answer: A
+
+16. The ratio of ages of A and B is 4:3. After 6 years, the ratio will be 5:4. What is the present age of A?
+A) 20 years
+B) 24 years
+C) 28 years
+D) 32 years
+Answer: B
+
+17. Identify the figure of speech: 'The wind whispered through the trees.'
+A) Simile
+B) Metaphor
+C) Personification
+D) Hyperbole
+Answer: C
+
+18. A shopkeeper sells an item at 15% profit. If the cost price is ₹200, what is the selling price?
+A) ₹215
+B) ₹225
+C) ₹230
+D) ₹240
+Answer: C
+
+19. Find the odd one out: Apple, Mango, Potato, Banana.
+A) Apple
+B) Mango
+C) Potato
+D) Banana
+Answer: C
+
+20. A bar graph shows that 150 students passed in 2020 and 200 in 2021. What is the percentage increase from 2020 to 2021?
+A) 25%
+B) 30%
+C) 33.33%
+D) 50%
+Answer: C

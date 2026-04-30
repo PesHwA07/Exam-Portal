@@ -1,12 +1,28 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Zap, Clock, User, ChevronLeft, ChevronRight, Send, Tag } from 'lucide-react';
-import questions from '../data/questions';
+import { Zap, Clock, User, ChevronLeft, ChevronRight, Send, Tag, RefreshCw, AlertTriangle, XCircle } from 'lucide-react';
 import AntiCheatBlocker from './AntiCheatBlocker';
 import QuestionNavigator from './QuestionNavigator';
 import Watermark from './Watermark';
 import { saveSession, clearSession } from '../utils/sessionManager';
-const EXAM_DURATION = 30 * 60; 
-export default function ExamScreen({ studentData, onFinish, resumeData }) {
+import { fetchActiveQuestions, fetchActiveAnswers } from '../utils/api';
+
+const EXAM_DURATION = 30 * 60;
+
+// ─── Fisher-Yates shuffle ───
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+export default function ExamScreen({ studentData, onFinish, resumeData, onExit }) {
+  const [questions, setQuestions] = useState(resumeData?.questions || []);
+  const [questionsLoading, setQuestionsLoading] = useState(!resumeData?.questions);
+  const [questionsError, setQuestionsError] = useState('');
+
   const [currentIndex, setCurrentIndex] = useState(resumeData?.currentIndex ?? 0);
   const [answers, setAnswers] = useState(resumeData?.answers ?? {});
   const [timeLeft, setTimeLeft] = useState(resumeData?.timeLeft ?? EXAM_DURATION);
@@ -15,19 +31,83 @@ export default function ExamScreen({ studentData, onFinish, resumeData }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const timerRef = useRef(null);
   const violationsRef = useRef(violations);
+
   useEffect(() => {
     violationsRef.current = violations;
   }, [violations]);
+
+  // ─── Fetch questions dynamically ───
   useEffect(() => {
-    saveSession({
-      studentData,
-      answers,
-      currentIndex,
-      timeLeft,
-      violations,
-    });
-  }, [studentData, answers, currentIndex, timeLeft, violations]);
+    if (resumeData?.questions && resumeData.questions.length > 0) {
+      setQuestions(resumeData.questions);
+      setQuestionsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadQuestions() {
+      setQuestionsLoading(true);
+      setQuestionsError('');
+      try {
+        const data = await fetchActiveQuestions();
+        if (cancelled) return;
+
+        if (!data.available || !data.questions || data.questions.length === 0) {
+          setQuestionsError('No questions are currently published. Please contact the administrator.');
+          setQuestionsLoading(false);
+          return;
+        }
+
+        let qs = data.questions;
+
+        // Apply randomization
+        if (data.randomizeQuestions) {
+          qs = shuffleArray(qs);
+        }
+        if (data.randomizeOptions) {
+          qs = qs.map(q => {
+            if (q.options && q.options.length > 0) {
+              // Create index array and shuffle it; use same order for options
+              const indices = q.options.map((_, i) => i);
+              const shuffledIndices = shuffleArray(indices);
+              const shuffledOptions = shuffledIndices.map(i => q.options[i]);
+              return { ...q, options: shuffledOptions, originalIndices: shuffledIndices };
+            }
+            return q;
+          });
+        }
+
+        setQuestions(qs);
+        setQuestionsLoading(false);
+      } catch (err) {
+        if (cancelled) return;
+        setQuestionsError(err.message || 'Failed to load questions.');
+        setQuestionsLoading(false);
+      }
+    }
+
+    loadQuestions();
+    return () => { cancelled = true; };
+  }, [resumeData]);
+
+  // ─── Save session ───
   useEffect(() => {
+    if (questions.length > 0) {
+      saveSession({
+        studentData,
+        answers,
+        currentIndex,
+        timeLeft,
+        violations,
+        questions,
+      });
+    }
+  }, [studentData, answers, currentIndex, timeLeft, violations, questions]);
+
+  // ─── Timer ───
+  useEffect(() => {
+    if (questions.length === 0) return;
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -39,7 +119,8 @@ export default function ExamScreen({ studentData, onFinish, resumeData }) {
       });
     }, 1000);
     return () => clearInterval(timerRef.current);
-  }, []);
+  }, [questions]);
+
   const enterFullscreen = useCallback(() => {
     const el = document.documentElement;
     const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
@@ -47,9 +128,11 @@ export default function ExamScreen({ studentData, onFinish, resumeData }) {
       rfs.call(el).then(() => setIsFullscreen(true)).catch(() => {});
     }
   }, []);
+
   useEffect(() => {
-    enterFullscreen();
-  }, [enterFullscreen]);
+    if (questions.length > 0) enterFullscreen();
+  }, [questions, enterFullscreen]);
+
   useEffect(() => {
     const handler = () => {
       const isFull = !!document.fullscreenElement;
@@ -61,6 +144,7 @@ export default function ExamScreen({ studentData, onFinish, resumeData }) {
     document.addEventListener('fullscreenchange', handler);
     return () => document.removeEventListener('fullscreenchange', handler);
   }, []);
+
   const handleViolation = useCallback(() => {
     setViolations((prev) => {
       const next = prev + 1;
@@ -68,34 +152,65 @@ export default function ExamScreen({ studentData, onFinish, resumeData }) {
       return next;
     });
   }, []);
+
   const acknowledgeWarning = () => {
     setShowWarning(false);
     if (!document.fullscreenElement) {
       enterFullscreen();
     }
   };
+
   const selectAnswer = (optionIndex) => {
-    setAnswers((prev) => ({ ...prev, [questions[currentIndex].id]: optionIndex }));
+    if (questions.length === 0) return;
+    const q = questions[currentIndex];
+    // Map shuffled index back to original index for correct grading
+    const originalIndex = q.originalIndices ? q.originalIndices[optionIndex] : optionIndex;
+    setAnswers((prev) => ({ ...prev, [q.id]: originalIndex }));
+  };
+
+  const clearAnswer = () => {
+    if (questions.length === 0) return;
+    const qId = questions[currentIndex].id;
+    setAnswers((prev) => {
+      const next = { ...prev };
+      delete next[qId];
+      return next;
+    });
   };
   const goTo = (index) => setCurrentIndex(index);
   const goPrev = () => setCurrentIndex((p) => Math.max(0, p - 1));
   const goNext = () => setCurrentIndex((p) => Math.min(questions.length - 1, p + 1));
-  const handleSubmit = () => {
+
+  const handleSubmit = async () => {
     clearInterval(timerRef.current);
     clearSession();
+
+    // Fetch correct answers from server for grading
     let correct = 0;
     let wrong = 0;
     let skipped = 0;
-    questions.forEach((q) => {
-      const selected = answers[q.id];
-      if (selected === undefined) {
-        skipped++;
-      } else if (selected === q.correctAnswer) {
-        correct++;
-      } else {
-        wrong++;
-      }
-    });
+
+    try {
+      const { answers: answerMap } = await fetchActiveAnswers();
+
+      questions.forEach((q) => {
+        const selected = answers[q.id];
+        if (selected === undefined) {
+          skipped++;
+        } else if (answerMap[q.id] !== undefined && selected === answerMap[q.id]) {
+          correct++;
+        } else if (answerMap[q.id] === -1 || answerMap[q.id] === undefined) {
+          // No correct answer defined — don't count as wrong
+          skipped++;
+        } else {
+          wrong++;
+        }
+      });
+    } catch {
+      // Fallback: all skipped if grading fails
+      skipped = questions.length;
+    }
+
     onFinish({
       studentData,
       total: questions.length,
@@ -106,16 +221,53 @@ export default function ExamScreen({ studentData, onFinish, resumeData }) {
       timeTaken: EXAM_DURATION - timeLeft,
     });
   };
+
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   };
+
+  // ─── Loading state ───
+  if (questionsLoading) {
+    return (
+      <div className="intro-screen">
+        <div className="glass-card intro-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
+          <RefreshCw size={48} className="spin" style={{ color: 'var(--accent-primary)', marginBottom: '20px' }} />
+          <h2 style={{ marginBottom: '12px' }}>Loading Questions</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+            Fetching exam questions from server...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Error state ───
+  if (questionsError || questions.length === 0) {
+    return (
+      <div className="intro-screen">
+        <div className="glass-card intro-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
+          <AlertTriangle size={48} style={{ color: 'var(--accent-warning)', marginBottom: '20px' }} />
+          <h2 style={{ marginBottom: '12px' }}>No Exam Available</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.6' }}>
+            {questionsError || 'No questions have been published yet. Please contact your administrator.'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const timerClass = timeLeft <= 60 ? 'danger' : timeLeft <= 300 ? 'warning' : '';
   const currentQ = questions[currentIndex];
-  const selectedAnswer = answers[currentQ.id];
+  // answers stores original indices; reverse-map to find which shuffled UI index to highlight
+  const storedAnswer = answers[currentQ.id];
+  const selectedAnswer = storedAnswer !== undefined && currentQ.originalIndices
+    ? currentQ.originalIndices.indexOf(storedAnswer)
+    : storedAnswer;
   const answeredCount = Object.keys(answers).length;
   const progress = ((currentIndex + 1) / questions.length) * 100;
+
   return (
     <AntiCheatBlocker onViolation={handleViolation}>
       <Watermark studentName={studentData.name} />
@@ -184,6 +336,11 @@ export default function ExamScreen({ studentData, onFinish, resumeData }) {
             <button className="btn-nav" onClick={goPrev} disabled={currentIndex === 0}>
               <ChevronLeft size={16} /> Previous
             </button>
+            {selectedAnswer !== undefined && (
+              <button className="btn-nav clear" onClick={clearAnswer}>
+                <XCircle size={16} /> Clear
+              </button>
+            )}
             {currentIndex === questions.length - 1 ? (
               <button className="btn-nav submit" onClick={handleSubmit}>
                 <Send size={16} /> Submit Test

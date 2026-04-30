@@ -1,0 +1,21 @@
+EXAM TITLE: Sample Test Upload
+CATEGORY: General Knowledge
+
+1. What is the capital of France?
+A) London
+B) Berlin
+C) Paris
+D) Madrid
+Answer: C
+
+2. Which planet is known as the Red Planet?
+A) Venus
+B) Mars
+C) Jupiter
+D) Saturn
+Answer: B
+
+3. The earth is flat.
+A) True
+B) False
+Answer: B

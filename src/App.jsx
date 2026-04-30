@@ -88,6 +88,15 @@ function App() {
           studentData={studentData}
           onFinish={handleExamFinish}
           resumeData={resumeData}
+          onExit={() => {
+            clearSession();
+            setResumeData(null);
+            setStudentData(null);
+            if (document.fullscreenElement) {
+              document.exitFullscreen().catch(() => {});
+            }
+            setScreen('intro');
+          }}
         />
       )}
 
